@@ -4,7 +4,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
 
-    <!-- 我自己添加一个版本信息和下载地址 -->
+    <!-- my: add version and download_path -->
     <version>1.0</version>
     <download_path>https://raw.githubusercontent.com/CXCellTrack/Memo_For_HQS/master/app/src/main/AndroidManifest.xml</download_path>
 

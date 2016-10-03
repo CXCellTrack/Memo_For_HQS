@@ -9,13 +9,22 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.xml.sax.SAXException;
 
+
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 /**
  * Created by xchen on 2016/6/10.
@@ -60,7 +69,7 @@ public class Button_click {
         Cursor cs = Login.db.rawQuery("select * from memo where name like ?", new String[]{"%" + name + "%"});
         if (cs.moveToFirst()) {
             // 处理重复的方法
-            __process_conflict(Login.db, cs, name, id, ps, activity);
+            __process_conflict(cs, name, id, ps, activity);
         } else {
             ContentValues cv = new ContentValues();
             cv.put("name", name);
@@ -134,7 +143,7 @@ public class Button_click {
             public void onClick(DialogInterface dialoginterface, int i) {
             }
         });
-        ab.setIcon(R.drawable.abc_btn_radio_material);
+        ab.setIcon(android.R.drawable.ic_menu_close_clear_cancel);
         ab.show();
     }
 
@@ -171,7 +180,7 @@ public class Button_click {
                     public void onClick(DialogInterface dialoginterface, int i) {
                     }
                 });
-        ab.setIcon(R.drawable.abc_btn_check_to_on_mtrl_000);
+        ab.setIcon(android.R.drawable.ic_delete);
         ab.show();
     }
 
@@ -231,7 +240,18 @@ public class Button_click {
                 } finally {
                     Act_handler.set_invisiable(Login.pb, hl);
                 }
-                Act_handler.show_version(activity, doc.toString(), hl);
+                // 解析文件，获得版本
+                String version = doc.getElementsByTag("version").first().text();
+                String download_path = doc.getElementsByTag("download_path").first().text();
+                StringBuilder info = new StringBuilder("当前版本 " + Login.cur_version +
+                        "\n最新版本" + version + "\n");
+                if (version.equals(Login.cur_version)){
+                    info.append("无需更新，请点击取消");
+                }else{
+                    info.append("是否需要更新？");
+                }
+                // 选择是否更新
+                Act_handler.show_version(activity, info.toString(), hl);
 
             }
         }).start();
@@ -254,8 +274,7 @@ public class Button_click {
     //======================================
     // 处理name冲突的方法
     //======================================
-    public static void __process_conflict(final SQLiteDatabase db, Cursor cs,
-                                          final String name, final String id, final String ps, final Activity activity){
+    public static void __process_conflict(Cursor cs, final String name, final String id, final String ps, final Activity activity){
         String id_old = cs.getString(cs.getColumnIndex("id"));
         String ps_old = cs.getString(cs.getColumnIndex("password"));
         if (!id_old.equals(id) || !ps_old.equals(ps)) {
@@ -267,7 +286,7 @@ public class Button_click {
             ab.setPositiveButton("是",
                     new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialoginterface, int i) {
-                            __update_PS(db, name, id, ps);
+                            __update_PS(name, id, ps);
                             AlertDialog.Builder ab = new AlertDialog.Builder(activity);
                             ab.setMessage("记录成功！");
                             ab.show();
@@ -279,14 +298,15 @@ public class Button_click {
                             return;
                         }
                     });
-            ab.setIcon(R.drawable.abc_btn_radio_material);
+            ab.setIcon(android.R.drawable.ic_menu_edit);
             ab.show();
         }
     }
+
     //======================================
     // 更新表，修改以前记录的内容
     //======================================
-    public static void __update_PS(SQLiteDatabase db, String name, String id, String ps) {
+    public static void __update_PS(String name, String id, String ps) {
         // 有2种方法可以进行更新
         if (true) {
             ContentValues cv = new ContentValues(); //实例化ContentValues
@@ -294,12 +314,43 @@ public class Button_click {
             cv.put("password", ps);                 //添加要更改的字段及内容
             String whereClause = "name=?";            //修改条件
             String[] whereArgs = {name};              //修改条件的参数
-            db.update("memo", cv, whereClause, whereArgs);//执行修改
+            Login.db.update("memo", cv, whereClause, whereArgs);//执行修改
         } else {
             String sql = String.format("update memo set id=%s,password=%s where name=%s" , id, ps, name);
-            db.execSQL(sql);
+            Login.db.execSQL(sql);
         }
     }
+
+    //======================================
+    // 解析xml
+    //======================================
+    public static String __xml_parse(String docString){
+        // step 1: 获得dom解析器工厂（工作的作用是用于创建具体的解析器）
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        // step 2:获得具体的dom解析器
+        DocumentBuilder db = null;
+        try {
+            db = dbf.newDocumentBuilder();
+        } catch (ParserConfigurationException e) {
+            return null;
+        }
+        // step3: 解析一个xml文档，获得Document对象（根结点）
+        org.w3c.dom.Document document = null;
+        try {
+            document = db.parse(docString);
+        } catch (SAXException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (document==null)
+            return "doc is null";
+        org.w3c.dom.NodeList nodeList = document.getElementsByTagName("version");
+//        org.w3c.dom.Node node = document.getElementsByTagName("version").item(0);
+//        return node.getNodeValue();
+        return nodeList.toString();
+    }
+
 
 
 }

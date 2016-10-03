@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 public class Login extends ActionBarActivity {
 
+    public static String cur_version = "1.0";
     //======================================
     // 声明控件，放在里面也行
     //======================================
@@ -36,7 +37,7 @@ public class Login extends ActionBarActivity {
     //======================================
     public static String url_tips = "http://blog.sina.com.cn/s/blog_612ec26f0102we3w.html";
     public static String url_ver = "https://raw.githubusercontent.com/CXCellTrack/"+
-            "Memo_For_HQS/master/app/src/main/AndroidManifest.xml";
+            "Memo_For_HQS/master/src/main/AndroidManifest.xml";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

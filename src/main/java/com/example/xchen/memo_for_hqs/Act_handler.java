@@ -2,6 +2,7 @@ package com.example.xchen.memo_for_hqs;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Handler;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -37,6 +38,7 @@ public class Act_handler {
                 AlertDialog.Builder ab = new AlertDialog.Builder(activity);
                 ab.setTitle("错误");
                 ab.setMessage("网络连接失败！");
+                ab.setIcon(android.R.drawable.ic_dialog_alert);
                 ab.show();
             }
         });
@@ -47,8 +49,9 @@ public class Act_handler {
         hl.post(new Runnable() {
             public void run() {
                 AlertDialog.Builder ab = new AlertDialog.Builder(activity);
-                ab.setTitle("消息");
+                ab.setTitle("每日话语");
                 ab.setMessage("from CX:\n      " + text);
+                ab.setIcon(android.R.drawable.ic_dialog_email);
                 ab.show();
             }
         });
@@ -61,6 +64,16 @@ public class Act_handler {
                 AlertDialog.Builder ab = new AlertDialog.Builder(activity);
                 ab.setTitle("版本信息");
                 ab.setMessage(text);
+                ab.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialoginterface, int i) {
+                    }
+                }).setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialoginterface, int i) {
+                        // todo 下载新版本
+
+
+                    }
+                }).setIcon(android.R.drawable.ic_dialog_info);
                 ab.show();
             }
         });
