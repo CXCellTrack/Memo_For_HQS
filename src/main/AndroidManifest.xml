@@ -24,7 +24,7 @@
         </activity>
         <activity
             android:name=".Show_all_info"
-            android:label="全部帐号信息" >
+            android:label="@string/title_activity_show_all_info" >
         </activity>
     </application>
 

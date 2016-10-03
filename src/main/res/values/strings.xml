@@ -1,7 +1,5 @@
 <resources>
     <string name="app_name">木头备忘录</string>
-
-    <string name="hello_world">Hello world!</string>
     <string name="action_settings">敬请期待</string>
-    <string name="title_activity_show_all_info">show_all_info</string>
+    <string name="title_activity_show_all_info">全部帐号信息</string>
 </resources>
