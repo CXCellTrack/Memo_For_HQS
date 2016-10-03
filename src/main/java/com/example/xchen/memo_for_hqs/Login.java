@@ -1,6 +1,7 @@
 package com.example.xchen.memo_for_hqs;
 
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -8,13 +9,22 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.HeaderViewListAdapter;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import java.io.File;
+
 public class Login extends ActionBarActivity {
 
+
+    //======================================
+    // 版本号、handler（用于在子线程中向外传递消息）
+    //======================================
     public static String cur_version = "1.0";
+    public static Handler hl = new Handler();
+
     //======================================
     // 声明控件，放在里面也行
     //======================================
@@ -39,10 +49,28 @@ public class Login extends ActionBarActivity {
     public static String url_ver = "https://raw.githubusercontent.com/CXCellTrack/"+
             "Memo_For_HQS/master/src/main/AndroidManifest.xml";
 
+    //======================================
+    //
+    //======================================
+    // 目录地址
+    public static String sdcard_path = android.os.Environment.
+            getExternalStorageDirectory().getAbsolutePath(); // 得到外部存储卡的数据库的路径名
+    public static String app_dir = sdcard_path + "/木头备忘录";
+    public static String apk_name = app_dir + "/app_" + cur_version + ".apk";
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        //======================================
+        // 建立目录
+        //======================================
+        File rootfile = new File(app_dir);
+        if (!rootfile.exists())
+            rootfile.mkdir();
+
 
         //======================================
         // 控件绑定

@@ -6,25 +6,20 @@ import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.os.Handler;
-import android.util.Log;
 import android.view.View;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.xml.sax.SAXException;
 
 
-import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 /**
  * Created by xchen on 2016/6/10.
@@ -190,7 +185,6 @@ public class Button_click {
     //======================================
     public static void click_bt_tips(final Activity activity){
         Login.pb.setVisibility(View.VISIBLE);
-        final Handler hl = new Handler();
         // 新建一个线程用于下载
         Thread th_download = new Thread(new Runnable() {
             @Override
@@ -204,15 +198,15 @@ public class Button_click {
                                     "Chrome/50.0.2661.102 Safari/537.36")
                             .get();
                 } catch (Exception e) {
-                    Act_handler.connect_error(activity, hl);
+                    Act_handler.show_error(activity, "网络连接失败！");
                     return;
                 } finally {
-                    Act_handler.set_invisiable(Login.pb, hl);
+                    Act_handler.set_invisiable(Login.pb);
                 }
 
                 Element elt = doc.body().getElementsByClass("BNE_cont").first();
                 Element data = elt.getElementsByTag("p").first(); // 只读取第一段
-                Act_handler.show_tips(activity, data.text(), hl);
+                Act_handler.show_tips(activity, data.text());
 
             }
         });
@@ -227,7 +221,6 @@ public class Button_click {
     //======================================
     public static void click_imbt_dog(final Activity activity){
         Login.pb.setVisibility(View.VISIBLE);
-        final Handler hl = new Handler();
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -235,10 +228,10 @@ public class Button_click {
                 try {
                     doc = Jsoup.connect(Login.url_ver).timeout(3000).get();
                 } catch (Exception e){
-                    Act_handler.connect_error(activity, hl);
+                    Act_handler.show_error(activity, "网络连接失败！");
                     return;
                 } finally {
-                    Act_handler.set_invisiable(Login.pb, hl);
+                    Act_handler.set_invisiable(Login.pb);
                 }
                 // 解析文件，获得版本
                 String version = doc.getElementsByTag("version").first().text();
@@ -251,7 +244,7 @@ public class Button_click {
                     info.append("是否需要更新？");
                 }
                 // 选择是否更新
-                Act_handler.show_version(activity, info.toString(), hl);
+                Act_handler.show_version(activity, info.toString(), download_path);
 
             }
         }).start();
@@ -322,33 +315,24 @@ public class Button_click {
     }
 
     //======================================
-    // 解析xml
+    // 从github上下载apk
     //======================================
-    public static String __xml_parse(String docString){
-        // step 1: 获得dom解析器工厂（工作的作用是用于创建具体的解析器）
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        // step 2:获得具体的dom解析器
-        DocumentBuilder db = null;
-        try {
-            db = dbf.newDocumentBuilder();
-        } catch (ParserConfigurationException e) {
-            return null;
+    public static void __download_apk(final Activity activity, final String download_path) throws IOException {
+        URL url = new URL(download_path);
+        URLConnection connection;
+        connection = url.openConnection();
+        // 以流的形式进行下载
+        InputStream in = connection.getInputStream();
+        Act_handler.show_tips(activity, "连接成功！开始下载...");
+        FileOutputStream os = new FileOutputStream(Login.apk_name);
+        byte[] buffer = new byte[10 * 1024]; // 每次下载10k
+        int read;
+        while ((read = in.read(buffer)) > 0) {
+            os.write(buffer, 0, read);
         }
-        // step3: 解析一个xml文档，获得Document对象（根结点）
-        org.w3c.dom.Document document = null;
-        try {
-            document = db.parse(docString);
-        } catch (SAXException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        if (document==null)
-            return "doc is null";
-        org.w3c.dom.NodeList nodeList = document.getElementsByTagName("version");
-//        org.w3c.dom.Node node = document.getElementsByTagName("version").item(0);
-//        return node.getNodeValue();
-        return nodeList.toString();
+        os.close();
+        in.close();
+        Act_handler.show_tips(activity, "下载完毕！");
     }
 
 
