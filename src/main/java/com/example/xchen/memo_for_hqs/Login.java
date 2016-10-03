@@ -23,7 +23,7 @@ public class Login extends ActionBarActivity {
     // 版本号、handler（用于在子线程中向外传递消息）
     //======================================
     public static String cur_version = "1.0";
-    public static Handler hl = new Handler();
+    public static Handler hl = new Handler(); // 不管哪个线程，只用这个handle就行
 
     //======================================
     // 声明控件，放在里面也行
@@ -56,7 +56,7 @@ public class Login extends ActionBarActivity {
     public static String sdcard_path = android.os.Environment.
             getExternalStorageDirectory().getAbsolutePath(); // 得到外部存储卡的数据库的路径名
     public static String app_dir = sdcard_path + "/木头备忘录";
-    public static String apk_name = app_dir + "/app_" + cur_version + ".apk";
+    public static String apk_name = app_dir + "/木头备忘录_" + cur_version + ".apk";
 
 
     @Override

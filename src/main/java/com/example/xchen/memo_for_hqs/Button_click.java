@@ -13,12 +13,6 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
-
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 
 /**
@@ -90,9 +84,9 @@ public class Button_click {
         Cursor cs = Login.db.rawQuery("select * from memo", new String[]{});
         ArrayList<String> data = new ArrayList();
 //        data.add("帐号类型\t\t用户名\t\t密码");
-        if (cs.moveToFirst()){
+        if (cs.moveToFirst()) {
             String name, id, ps;
-            for (int i=0;i<cs.getCount();i++){
+            for (int i = 0; i < cs.getCount(); i++) {
                 StringBuilder sb = new StringBuilder();
                 cs.moveToPosition(i);
                 name = cs.getString(cs.getColumnIndex("name"));
@@ -121,7 +115,7 @@ public class Button_click {
     //======================================
     // 按键delete的相应事件（删除一条记录）
     //======================================
-    public static void click_bt_delete(final Activity activity){
+    public static void click_bt_delete(final Activity activity) {
         if (Login.editText1.getText().toString().equals(""))
             return;
 
@@ -157,7 +151,7 @@ public class Button_click {
                             // 获取记录数目
                             Cursor cs = Login.db.rawQuery("select count(*) from memo", null);
                             int num = 0;
-                            if(cs.moveToFirst()){
+                            if (cs.moveToFirst()) {
                                 num = cs.getInt(0);
                             }
                             cs.close();
@@ -172,9 +166,9 @@ public class Button_click {
                     }
                 });
         ab.setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialoginterface, int i) {
-                    }
-                });
+            public void onClick(DialogInterface dialoginterface, int i) {
+            }
+        });
         ab.setIcon(android.R.drawable.ic_delete);
         ab.show();
     }
@@ -183,9 +177,9 @@ public class Button_click {
     //======================================
     // 按键tips的相应事件，从网上获取一段话
     //======================================
-    public static void click_bt_tips(final Activity activity){
+    public static void click_bt_tips(final Activity activity) {
         Login.pb.setVisibility(View.VISIBLE);
-        // 新建一个线程用于下载
+        // 新建一个线程用于连接网页
         Thread th_download = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -195,8 +189,7 @@ public class Button_click {
                     doc = Jsoup.connect(Login.url_tips).timeout(3000)
                             .header("User-Agent",
                                     "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) " +
-                                    "Chrome/50.0.2661.102 Safari/537.36")
-                            .get();
+                                            "Chrome/50.0.2661.102 Safari/537.36").get();
                 } catch (Exception e) {
                     Act_handler.show_error(activity, "网络连接失败！");
                     return;
@@ -210,7 +203,7 @@ public class Button_click {
 
             }
         });
-        // 开始下载
+        // 开始连接网页
         th_download.start();
 
     }
@@ -219,16 +212,20 @@ public class Button_click {
     //======================================
     // 点击狗图片，进行版本更新
     //======================================
-    public static void click_imbt_dog(final Activity activity){
+    public static void click_imbt_dog(final Activity activity) {
         Login.pb.setVisibility(View.VISIBLE);
+        // 需要新开线程
         new Thread(new Runnable() {
             @Override
             public void run() {
                 Document doc;
                 try {
-                    doc = Jsoup.connect(Login.url_ver).timeout(3000).get();
-                } catch (Exception e){
-                    Act_handler.show_error(activity, "网络连接失败！");
+                    doc = Jsoup.connect(Login.url_ver).timeout(5000).
+                            header("User-Agent",
+                                    "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) " +
+                                            "Chrome/50.0.2661.102 Safari/537.36").get();
+                } catch (Exception e) {
+                    Act_handler.show_error(activity, "下载站点暂时不可用！");
                     return;
                 } finally {
                     Act_handler.set_invisiable(Login.pb);
@@ -237,14 +234,14 @@ public class Button_click {
                 String version = doc.getElementsByTag("version").first().text();
                 String download_path = doc.getElementsByTag("download_path").first().text();
                 StringBuilder info = new StringBuilder("当前版本 " + Login.cur_version +
-                        "\n最新版本" + version + "\n");
-                if (version.equals(Login.cur_version)){
+                        "\n最新版本 " + version + "\n");
+                if (version.equals(Login.cur_version)) {
                     info.append("无需更新，请点击取消");
-                }else{
+                } else {
                     info.append("是否需要更新？");
                 }
                 // 选择是否更新
-                Act_handler.show_version(activity, info.toString(), download_path);
+                Act_handler.check_version(activity, info.toString(), download_path);
 
             }
         }).start();
@@ -253,11 +250,13 @@ public class Button_click {
 
     // =========================================================================================== //
     // 下面是相关子函数
-    
+    // =========================================================================================== //
+
+
     //======================================
     // 用于dialog中点击确认后，删去记录
     //======================================
-    public static void __delete_record(String name){
+    public static void __delete_record(String name) {
         //删除操作的SQL语句
         String sql = "delete from memo where name like '%" + name + "%';";
         Login.db.execSQL(sql); //执行删除操作
@@ -267,7 +266,7 @@ public class Button_click {
     //======================================
     // 处理name冲突的方法
     //======================================
-    public static void __process_conflict(Cursor cs, final String name, final String id, final String ps, final Activity activity){
+    public static void __process_conflict(Cursor cs, final String name, final String id, final String ps, final Activity activity) {
         String id_old = cs.getString(cs.getColumnIndex("id"));
         String ps_old = cs.getString(cs.getColumnIndex("password"));
         if (!id_old.equals(id) || !ps_old.equals(ps)) {
@@ -309,32 +308,10 @@ public class Button_click {
             String[] whereArgs = {name};              //修改条件的参数
             Login.db.update("memo", cv, whereClause, whereArgs);//执行修改
         } else {
-            String sql = String.format("update memo set id=%s,password=%s where name=%s" , id, ps, name);
+            String sql = String.format("update memo set id=%s,password=%s where name=%s", id, ps, name);
             Login.db.execSQL(sql);
         }
     }
 
-    //======================================
-    // 从github上下载apk
-    //======================================
-    public static void __download_apk(final Activity activity, final String download_path) throws IOException {
-        URL url = new URL(download_path);
-        URLConnection connection;
-        connection = url.openConnection();
-        // 以流的形式进行下载
-        InputStream in = connection.getInputStream();
-        Act_handler.show_tips(activity, "连接成功！开始下载...");
-        FileOutputStream os = new FileOutputStream(Login.apk_name);
-        byte[] buffer = new byte[10 * 1024]; // 每次下载10k
-        int read;
-        while ((read = in.read(buffer)) > 0) {
-            os.write(buffer, 0, read);
-        }
-        os.close();
-        in.close();
-        Act_handler.show_tips(activity, "下载完毕！");
-    }
-
-
-
 }
+
