@@ -22,7 +22,7 @@ public class Login extends ActionBarActivity {
     //======================================
     // 版本号、handler（用于在子线程中向外传递消息）
     //======================================
-    public static String cur_version = "1.0";
+    public static String cur_version = "1.0.0";
     public static Handler hl = new Handler(); // 不管哪个线程，只用这个handle就行
 
     //======================================
