@@ -14,6 +14,8 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by xchen on 2016/6/10.
@@ -220,19 +222,33 @@ public class Button_click {
             public void run() {
                 Document doc;
                 try {
-                    doc = Jsoup.connect(Login.url_ver).timeout(5000).
-                            header("User-Agent",
-                                    "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) " +
-                                            "Chrome/50.0.2661.102 Safari/537.36").get();
+                    doc = Jsoup.connect(Login.url_ver).timeout(5000).header(
+                            "User-Agent",
+                            "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 " +
+                                "(KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36"
+                    ).get();
                 } catch (Exception e) {
                     Act_handler.show_error(activity, "下载站点暂时不可用！");
                     return;
                 } finally {
                     Act_handler.set_invisiable(Login.pb);
                 }
-                // 解析文件，获得版本
-                String new_version = doc.getElementsByTag("version").first().text();
-                String download_path = doc.getElementsByTag("download_path").first().text();
+
+                String new_version = null;
+                if (false) {
+                    // （旧方法）解析xml文件，获得版本
+                    new_version = doc.getElementsByTag("version").first().text();
+                } else {
+                    // 解析build.gradle，获得版本
+                    Matcher mat = Pattern.compile(new String("versionName\\s+'(.+?)'")).
+                            matcher(doc.text().replaceAll("\n", " "));
+                    if (mat.find())
+                        new_version = mat.group(1);
+                }
+
+                // 生成下载地址
+                String download_path = String.format("https://github.com/CXCellTrack/" +
+                        "Memo_For_HQS/releases/download/%s/app-release.apk", new_version);
                 StringBuilder info = new StringBuilder("当前版本 " + Login.cur_version +
                         "\n最新版本 " + new_version + "\n");
                 if (new_version.equals(Login.cur_version)) {

@@ -47,8 +47,8 @@ public class Login extends ActionBarActivity {
     // 下载地址
     //======================================
     public static String url_tips = "http://blog.sina.com.cn/s/blog_612ec26f0102we3w.html";
-    public static String url_ver = "https://raw.githubusercontent.com/CXCellTrack/"+
-            "Memo_For_HQS/master/src/main/AndroidManifest.xml";
+    public static String url_ver = "https://raw.githubusercontent.com/CXCellTrack/" +
+            "Memo_For_HQS/master/build.gradle";
 
     //======================================
     //
