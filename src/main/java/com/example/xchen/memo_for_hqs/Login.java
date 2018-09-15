@@ -56,7 +56,7 @@ public class Login extends ActionBarActivity {
     public static String sdcard_path = android.os.Environment.
             getExternalStorageDirectory().getAbsolutePath(); // 得到外部存储卡的数据库的路径名
     public static String app_dir = sdcard_path + "/木头备忘录";
-    public static String apk_name = app_dir + "/木头备忘录_" + cur_version + ".apk";
+    public static String apk_name = app_dir + "/木头备忘录.apk";
 
 
     @Override
