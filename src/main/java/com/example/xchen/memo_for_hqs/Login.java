@@ -97,12 +97,12 @@ public class Login extends ActionBarActivity {
         TextView tv_help = (TextView) findViewById(R.id.textView_help);
         tv_help.setText(
                         "使用说明: \n" +
-                        "    1) 查询: 输入<帐号种类>，如‘微博’，即可查看微博帐号密码信息\n" +
-                        "    2) 记录: 输入<帐号类型><帐号(可省略)><密码>进行记录\n" +
+                        "    1) 查询: 输入[帐号种类]，如'微博'，即可查看微博帐号密码信息\n" +
+                        "    2) 记录: 输入[帐号类型][帐号(可省略)][密码]进行记录\n" +
                         "    3) 查看全部: 查看已经记录的全部信息\n\n" +
-                        "@App    MT专属备忘录\n" +
-                        "@Copyright  C.X.\n" +
-                        "@Date   2016.10.1"
+                        "@App  木头备忘录\n" +
+                        "@Date  2016.10.1\n" +
+                        "@Author  C.X."
         );
 
 

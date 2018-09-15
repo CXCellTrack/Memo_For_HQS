@@ -7,6 +7,8 @@ import android.text.method.ScrollingMovementMethod;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -14,10 +16,26 @@ import java.util.ArrayList;
 
 public class Show_all_info extends ActionBarActivity {
 
+    public static int idol_idx = 0;
+    public static ImageButton imbt_idol = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_all_info);
+
+        // 绑定图片控件
+        imbt_idol = (ImageButton) findViewById(R.id.imageButton_idol);
+        //======================================
+        // 图片的点击功能
+        //======================================
+        imbt_idol.setOnClickListener(new ImageButton.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Button_click.click_imbt_idol(); // 更新版本
+            }
+        });
+
         //======================================
         // 显示当前所有的帐号信息
         //======================================
@@ -27,7 +45,7 @@ public class Show_all_info extends ActionBarActivity {
         for(String x: data){
             sb.append(x +'\n');
         }
-//        tv.setTextSize(20);
+        tv.setTextSize(20);
         tv.setHorizontallyScrolling(true);
         tv.setFocusable(true);
         // 设置滚动条启动

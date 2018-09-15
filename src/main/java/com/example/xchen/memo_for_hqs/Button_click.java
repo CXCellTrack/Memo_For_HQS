@@ -8,12 +8,14 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageButton;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Created by xchen on 2016/6/10.
@@ -245,6 +247,26 @@ public class Button_click {
 
             }
         }).start();
+    }
+
+
+    //======================================
+    // 点击idol图片，切换图片
+    //======================================
+    public static void click_imbt_idol() {
+        ArrayList resId = new ArrayList();
+        resId.add(R.drawable.marvel);
+        resId.add(R.drawable.idol_0);
+        resId.add(R.drawable.idol_1);
+        resId.add(R.drawable.idol_2);
+        resId.add(R.drawable.idol_3);
+        resId.add(R.drawable.idol_4);
+        if (Show_all_info.idol_idx < resId.size()-1) {
+            Show_all_info.idol_idx += 1;
+        } else {
+            Show_all_info.idol_idx = 0;
+        }
+        Show_all_info.imbt_idol.setImageResource((int) resId.get(Show_all_info.idol_idx));
     }
 
 

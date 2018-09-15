@@ -57,7 +57,7 @@ public class Act_handler {
             public void run() {
                 AlertDialog.Builder ab = new AlertDialog.Builder(activity);
                 ab.setTitle("每日话语");
-                ab.setMessage("from CX:\n      " + text);
+                ab.setMessage("FROM C.X.:\n        " + text);
                 ab.setIcon(android.R.drawable.ic_dialog_email);
                 ab.show();
             }
