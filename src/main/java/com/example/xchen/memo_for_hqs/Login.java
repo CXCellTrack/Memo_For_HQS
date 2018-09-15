@@ -1,15 +1,16 @@
 package com.example.xchen.memo_for_hqs;
 
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
-import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.HeaderViewListAdapter;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -22,7 +23,7 @@ public class Login extends ActionBarActivity {
     //======================================
     // 版本号、handler（用于在子线程中向外传递消息）
     //======================================
-    public static String cur_version = "1.0.1";
+    public static String cur_version;
     public static Handler hl = new Handler(); // 不管哪个线程，只用这个handle就行
 
     //======================================
@@ -55,14 +56,30 @@ public class Login extends ActionBarActivity {
     // 目录地址
     public static String sdcard_path = android.os.Environment.
             getExternalStorageDirectory().getAbsolutePath(); // 得到外部存储卡的数据库的路径名
-    public static String app_dir = sdcard_path + "/木头备忘录";
-    public static String apk_name = app_dir + "/木头备忘录.apk";
-
+    public static String app_name = null;
+    public static String app_dir = null;
+    public static String app_fullpath = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        // 使用getResources获取资源
+        app_name = getResources().getString(R.string.app_name);
+        app_dir = sdcard_path + "/" + app_name;
+
+        //======================================
+        // 获取当前的版本信息（在project structrue中设置）
+        //======================================
+        PackageInfo package_info = null;
+        try {
+            package_info = getPackageManager().getPackageInfo(getPackageName(), 0);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        cur_version = package_info.versionName;
+
 
         //======================================
         // 建立目录
@@ -95,15 +112,15 @@ public class Login extends ActionBarActivity {
         // 使用说明处的文字显示
         //======================================
         TextView tv_help = (TextView) findViewById(R.id.textView_help);
-        tv_help.setText(
-                        "使用说明: \n" +
-                        "    1) 查询: 输入[帐号种类]，如'微博'，即可查看微博帐号密码信息\n" +
-                        "    2) 记录: 输入[帐号类型][帐号(可省略)][密码]进行记录\n" +
-                        "    3) 查看全部: 查看已经记录的全部信息\n\n" +
-                        "@App  木头备忘录\n" +
-                        "@Date  2016.10.1\n" +
-                        "@Author  C.X."
-        );
+        tv_help.setText(String.format(
+            "使用说明: \n" +
+            "    1) 查询: 输入[帐号种类]，如'微博'，即可查看微博帐号密码信息\n" +
+            "    2) 记录: 输入[帐号类型][帐号(可省略)][密码]进行记录\n" +
+            "    3) 查看全部: 查看已经记录的全部信息\n\n" +
+            "@App  %s\n" +
+            "@Date  2016.10.1\n" +
+            "@Author  C.X.", app_name
+        ));
 
 
         //======================================

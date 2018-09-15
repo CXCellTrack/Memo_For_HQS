@@ -125,7 +125,7 @@ public class Act_handler {
     //======================================
     public static File __download_apk(final Activity activity, final String download_path,
                                       final ProgressDialog pd) throws IOException {
-        final File apk = new File(Login.apk_name);
+        final File apk = new File(Login.app_fullpath);
 //        if (apk.exists()){
 //            Act_handler.show_msg(activity, "文件已经存在！");
 //            return;
@@ -136,7 +136,7 @@ public class Act_handler {
         URLConnection conn = url.openConnection();
         // 以流的形式进行下载
         InputStream in = conn.getInputStream();
-        FileOutputStream fos = new FileOutputStream(Login.apk_name);
+        FileOutputStream fos = new FileOutputStream(Login.app_fullpath);
         // 计算文件大小
         final int sz = conn.getContentLength()/1024;
 
@@ -181,7 +181,7 @@ public class Act_handler {
             public void run() {
                 AlertDialog.Builder ab = new AlertDialog.Builder(activity);
                 ab.setTitle("提示");
-                ab.setMessage("是否立刻安装 " + Login.apk_name + " ？");
+                ab.setMessage("是否立刻安装 " + Login.app_fullpath + " ？");
                 ab.setIcon(android.R.drawable.ic_menu_help);
                 ab.setNegativeButton("稍后", null);
                 ab.setPositiveButton("好的", new DialogInterface.OnClickListener() {

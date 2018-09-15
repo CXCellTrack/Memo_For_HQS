@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">木头备忘录</string>
+    <string name="app_name">特工通讯录</string>
     <string name="action_settings">敬请期待</string>
     <string name="title_activity_show_all_info">全部帐号信息</string>
 </resources>

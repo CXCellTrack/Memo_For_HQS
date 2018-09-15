@@ -8,14 +8,12 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ImageButton;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * Created by xchen on 2016/6/10.
@@ -233,15 +231,18 @@ public class Button_click {
                     Act_handler.set_invisiable(Login.pb);
                 }
                 // 解析文件，获得版本
-                String version = doc.getElementsByTag("version").first().text();
+                String new_version = doc.getElementsByTag("version").first().text();
                 String download_path = doc.getElementsByTag("download_path").first().text();
                 StringBuilder info = new StringBuilder("当前版本 " + Login.cur_version +
-                        "\n最新版本 " + version + "\n");
-                if (version.equals(Login.cur_version)) {
+                        "\n最新版本 " + new_version + "\n");
+                if (new_version.equals(Login.cur_version)) {
                     info.append("无需更新，请点击取消");
                 } else {
                     info.append("是否需要更新？");
                 }
+                // 修改将下载目标，加入新版本号
+                Login.app_fullpath = String.format("%s/%s-%s.apk", Login.app_dir, Login.app_name, new_version);
+
                 // 选择是否更新
                 Act_handler.check_version(activity, info.toString(), download_path);
 
