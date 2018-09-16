@@ -182,8 +182,7 @@
         style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="清空数据"
-        android:id="@+id/button_clear"
+        android:id="@+id/button_none"
         android:layout_alignParentEnd="true"
         android:layout_alignStart="@+id/button_see"
         android:textSize="18dp"
@@ -194,11 +193,11 @@
         android:layout_height="wrap_content"
         android:text="删除"
         android:id="@+id/button_delete"
-        android:layout_alignBottom="@+id/button_clear"
+        android:layout_alignBottom="@+id/button_none"
         android:layout_alignEnd="@+id/button_set"
         android:layout_alignStart="@+id/button_set"
         android:textSize="18dp"
-        android:layout_alignTop="@+id/button_clear" />
+        android:layout_alignTop="@+id/button_none" />
 
     <Button
         android:layout_width="wrap_content"
@@ -222,5 +221,46 @@
         android:indeterminate="false"
         android:layout_alignParentTop="true"
         android:layout_marginTop="25dp" />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageButton_reload"
+        android:src="@android:drawable/stat_notify_sync"
+        android:background="@android:color/darker_gray"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/imageButton_clear"
+        android:layout_marginTop="15dp" />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageButton_clear"
+        android:src="@android:drawable/ic_menu_delete"
+        android:background="@android:color/darker_gray"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignEnd="@+id/imageButton_reload"
+        android:layout_alignParentLeft="true" />
+
+    <Switch
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/switch_clear"
+        android:layout_alignBottom="@+id/imageButton_clear"
+        android:layout_toEndOf="@+id/imageButton_clear"
+        android:checked="false"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/imageButton_clear"
+        android:layout_marginLeft="8dp" />
+
+    <Switch
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/switch_reload"
+        android:checked="false"
+        android:layout_alignBottom="@+id/imageButton_reload"
+        android:layout_alignStart="@+id/switch_clear" />
 
 </RelativeLayout>

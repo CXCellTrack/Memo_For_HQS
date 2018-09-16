@@ -9,11 +9,11 @@ import android.database.sqlite.SQLiteOpenHelper;
  */
 public class DBhelper extends SQLiteOpenHelper {
 
-    private static final String DB_NAME = "hqs_memo.db"; // 数据库名称
-    private static final int version = 1; // 数据库版本
+    public static final String DB_NAME = "agent_memo.db"; // 数据库名称
+    public static final int DB_VERSION = 1; // 数据库版本
 
     public DBhelper(Context context) {
-        super(context, DB_NAME, null, version);
+        super(context, DB_NAME, null, DB_VERSION);
         // TODO Auto-generated constructor stub
     }
 

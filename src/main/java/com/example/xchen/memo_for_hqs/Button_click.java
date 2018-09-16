@@ -13,6 +13,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -41,8 +42,8 @@ public class Button_click {
             res = cs.getString(cs.getColumnIndex("password"));
             Login.editText3.setText(res);
         } else {
-            Login.editText2.setText("not found!");
-            Login.editText3.setText("not found!");
+            Login.editText2.setText("not found");
+            Login.editText3.setText("not found");
         }
         cs.close();
     }
@@ -67,9 +68,7 @@ public class Button_click {
             cv.put("id", id);
             cv.put("password", ps);
             Login.db.insert("memo", null, cv);
-            AlertDialog.Builder ab = new AlertDialog.Builder(activity);
-            ab.setMessage("记录成功！");
-            ab.show();
+            Act_handler.show_msg(activity, "记录成功！");
         }
         cs.close();
     }
@@ -114,6 +113,7 @@ public class Button_click {
         activity.finish();
     }
 
+
     //======================================
     // 按键delete的相应事件（删除一条记录）
     //======================================
@@ -128,12 +128,10 @@ public class Button_click {
         ab.setPositiveButton("确定", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialoginterface, int i) {
                 __delete_record(name);
+                Act_handler.show_msg(activity, "删除成功！");
             }
         });
-        ab.setNegativeButton("取消", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialoginterface, int i) {
-            }
-        });
+        ab.setNegativeButton("取消", null);
         ab.setIcon(android.R.drawable.ic_menu_close_clear_cancel);
         ab.show();
     }
@@ -143,35 +141,35 @@ public class Button_click {
     // 按键clear的响应事件（清空全部记录）
     //======================================
     public static void click_bt_clear(final Activity activity) {
+        // 必须吧switch开关打开清空才能执行
+        if (!Login.switch_clear.isChecked())
+            return;
         AlertDialog.Builder ab = new AlertDialog.Builder(activity);
-        ab.setTitle("提示");
-        ab.setMessage("此操作会清空所有本地记录，确认继续？");
+        ab.setTitle("警告");
+        ab.setMessage("是否备份并清空数据库？");
         ab.setPositiveButton("确定",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialoginterface, int i) {
                         try {
                             // 获取记录数目
-                            Cursor cs = Login.db.rawQuery("select count(*) from memo", null);
+                            Cursor cs = Login.db.rawQuery("select count(1) from memo", null);
                             int num = 0;
                             if (cs.moveToFirst()) {
                                 num = cs.getInt(0);
                             }
                             cs.close();
+                            // 空数据库不进行备份
+                            if (num > 0)
+                                __backup_db(activity);
                             Login.db.execSQL("delete from memo;");
-                            AlertDialog.Builder ab = new AlertDialog.Builder(activity);
-                            ab.setTitle("提示");
-                            ab.setMessage("共删除了" + num + "条记录");
-                            ab.show();
+                            Act_handler.show_msg(activity,  "共删除了" + num + "条记录");
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
                     }
                 });
-        ab.setNegativeButton("取消", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialoginterface, int i) {
-            }
-        });
-        ab.setIcon(android.R.drawable.ic_delete);
+        ab.setNegativeButton("取消", null);
+        ab.setIcon(android.R.drawable.ic_dialog_alert);
         ab.show();
     }
 
@@ -210,12 +208,32 @@ public class Button_click {
 
     }
 
-
     //======================================
-    // 点击狗图片，进行版本更新
+    // 点击进行数据库还原
     //======================================
-    public static void click_imbt_dog(final Activity activity) {
-        Login.pb.setVisibility(View.VISIBLE);
+    public static void click_bt_reload(final Activity activity) {
+        // 必须吧switch开关打开清空才能执行
+        if (!Login.switch_reload.isChecked())
+            return;
+        AlertDialog.Builder ab = new AlertDialog.Builder(activity);
+        ab.setTitle("警告");
+        ab.setMessage("是否从备份数据库中进行数据还原？");
+        ab.setPositiveButton("是",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialoginterface, int i) {
+                        __reload_db(activity);
+                    }
+                });
+        ab.setNegativeButton("否", null);
+        ab.setIcon(android.R.drawable.ic_dialog_alert);
+        ab.show();
+    }
+    //======================================
+    // 点击图片，进行版本更新
+    //======================================
+    public static void click_imbt_update(final Activity activity) {
+        Act_handler.set_visiable(Login.pb);
+        // Login.pb.setVisibility(View.VISIBLE);
         // 需要新开线程
         new Thread(new Runnable() {
             @Override
@@ -318,17 +336,10 @@ public class Button_click {
                     new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialoginterface, int i) {
                             __update_PS(name, id, ps);
-                            AlertDialog.Builder ab = new AlertDialog.Builder(activity);
-                            ab.setMessage("记录成功！");
-                            ab.show();
+                            Act_handler.show_msg(activity, "记录成功！");
                         }
                     });
-            ab.setNegativeButton("否",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialoginterface, int i) {
-                            return;
-                        }
-                    });
+            ab.setNegativeButton("否", null);
             ab.setIcon(android.R.drawable.ic_menu_edit);
             ab.show();
         }
@@ -350,6 +361,32 @@ public class Button_click {
             String sql = String.format("update memo set id=%s,password=%s where name=%s", id, ps, name);
             Login.db.execSQL(sql);
         }
+    }
+
+    //======================================
+    // 备份内部数据库到sdcard
+    //======================================
+    public static void __backup_db(Activity activity) {
+        String backup_name = Login.app_dir+"/"+DBhelper.DB_NAME;
+        try {
+            Act_handler.copyFile(Login.db.getPath(), backup_name);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Act_handler.show_msg(activity, String.format("数据库备份成功:\n%s", backup_name));
+    }
+
+    //======================================
+    // 还原sdcard中的数据库到内部
+    //======================================
+    public static void __reload_db(Activity activity) {
+        String backup_name = Login.app_dir+"/"+DBhelper.DB_NAME;
+        try {
+            Act_handler.copyFile(backup_name, Login.db.getPath());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Act_handler.show_msg(activity, "数据库还原成功:\n" + backup_name);
     }
 
 }

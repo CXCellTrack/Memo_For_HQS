@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import java.io.File;
@@ -41,7 +42,11 @@ public class Login extends ActionBarActivity {
     public static ImageButton imbt1;
     public static ImageButton imbt2;
     public static ImageButton imbt3;
-    public static ImageButton imbt_dog; // 狗的图片
+    public static ImageButton imbt_update; // app更新按钮
+    public static ImageButton imbt_clear; // 数据库清空按钮
+    public static Switch switch_clear;
+    public static ImageButton imbt_reload; // 数据库还原按钮
+    public static Switch switch_reload;
 
     //======================================
     // 下载地址
@@ -92,10 +97,15 @@ public class Login extends ActionBarActivity {
         //======================================
         // 控件绑定
         //======================================
-        imbt_dog = (ImageButton) findViewById(R.id.imageButton_dog);
         imbt1 = (ImageButton) findViewById(R.id.imageButton1);
         imbt2 = (ImageButton) findViewById(R.id.imageButton2);
         imbt3 = (ImageButton) findViewById(R.id.imageButton3);
+        imbt_update = (ImageButton) findViewById(R.id.imageButton_dog);
+        imbt_clear = (ImageButton) findViewById(R.id.imageButton_clear);
+        switch_clear = (Switch) findViewById(R.id.switch_clear);
+        imbt_reload = (ImageButton) findViewById(R.id.imageButton_reload);
+        switch_reload = (Switch) findViewById(R.id.switch_reload);
+
         editText1 = (EditText) findViewById(R.id.editText1);
         editText2 = (EditText) findViewById(R.id.editText2);
         editText3 = (EditText) findViewById(R.id.editText3);
@@ -113,29 +123,51 @@ public class Login extends ActionBarActivity {
         //======================================
         TextView tv_help = (TextView) findViewById(R.id.textView_help);
         tv_help.setText(String.format(
-            "使用说明: \n" +
-            "    1) 查询: 输入[帐号种类]，如'微博'，即可查看微博帐号密码信息\n" +
-            "    2) 记录: 输入[帐号类型][帐号(可省略)][密码]进行记录\n" +
-            "    3) 查看全部: 查看已经记录的全部信息\n\n" +
-            "@App  %s\n" +
-            "@Date  2016.10.1\n" +
-            "@Author  C.X.", app_name
+                "使用说明: \n" +
+                        "    1) 查询: 输入[帐号种类]，如'微博'，即可查看微博帐号密码信息\n" +
+                        "    2) 记录: 输入[帐号类型][帐号(可省略)][密码]进行记录\n" +
+                        "    3) 查看全部: 查看已经记录的全部信息\n\n" +
+                        "@App  %s\n" +
+                        "@Date  2016.10.1\n" +
+                        "@Author  C.X.", app_name
         ));
 
 
         //======================================
-        // 狗图片的点击功能
+        // imbt: 清空数据库
         //======================================
-        imbt_dog.setOnClickListener(new ImageButton.OnClickListener() {
+        imbt_clear.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Button_click.click_imbt_dog(Login.this); // 更新版本
+                Button_click.click_bt_clear(Login.this);
             }
         });
 
 
         //======================================
-        // 清行按钮的功能
+        // imbt: 还原数据库
+        //======================================
+        imbt_reload.setOnClickListener(new ImageButton.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Button_click.click_bt_reload(Login.this); // 更新版本
+            }
+        });
+
+
+        //======================================
+        // imbt: app更新
+        //======================================
+        imbt_update.setOnClickListener(new ImageButton.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Button_click.click_imbt_update(Login.this); // 更新版本
+            }
+        });
+
+
+        //======================================
+        // imbt: 清除输入
         //======================================
         imbt1.setOnClickListener(new ImageButton.OnClickListener() {
             @Override
@@ -157,7 +189,7 @@ public class Login extends ActionBarActivity {
         });
 
         //======================================
-        // 查询键
+        // button: 查询
         //======================================
         Button button_get = (Button) findViewById(R.id.button_get);
         button_get.setOnClickListener(new Button.OnClickListener() {
@@ -169,7 +201,7 @@ public class Login extends ActionBarActivity {
         });
 
         //======================================
-        // 存入键
+        // button: 存入
         //======================================
         Button button_set = (Button) findViewById(R.id.button_set);
         button_set.setOnClickListener(new Button.OnClickListener() {
@@ -180,7 +212,7 @@ public class Login extends ActionBarActivity {
         });
 
         //======================================
-        // 查看全部
+        // button: 查看全部
         //======================================
         Button button_see = (Button) findViewById(R.id.button_see);
         button_see.setOnClickListener(new Button.OnClickListener() {
@@ -191,7 +223,7 @@ public class Login extends ActionBarActivity {
         });
 
         //======================================
-        // 删除单条记录
+        // button: 删除单条记录
         //======================================
         Button button_delete = (Button) findViewById(R.id.button_delete);
         button_delete.setOnClickListener(new Button.OnClickListener() {
@@ -203,19 +235,13 @@ public class Login extends ActionBarActivity {
 
 
         //======================================
-        // 清空全部记录
+        // button：清空全部记录（已将功能转移到imbt_clear中）
         //======================================
-        Button button_clear = (Button) findViewById(R.id.button_clear);
-        button_clear.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Button_click.click_bt_clear(Login.this);
-            }
-        });
+        Button button_clear = (Button) findViewById(R.id.button_none);
 
 
         //======================================
-        // 获取每日话语
+        // button: 获取每日话语
         //======================================
         Button button_tips = (Button) findViewById(R.id.button_tips);
         button_tips.setOnClickListener(new Button.OnClickListener() {
@@ -237,8 +263,6 @@ public class Login extends ActionBarActivity {
         SQLiteDatabase db = dbhelper.getReadableDatabase();
         return db;
     }
-
-
 
 
     //======================================
